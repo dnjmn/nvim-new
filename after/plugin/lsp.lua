@@ -1,5 +1,9 @@
 local lsp = require('lsp-zero')
+-- Setup neovim lua configuration
+require('neodev').setup()
 
+-- Turn on lsp status information
+require('fidget').setup()
 lsp.preset('recommended')
 
 lsp.ensure_installed({
@@ -13,19 +17,47 @@ lsp.configure('sumneko_lua', {
 		Lua = {
 			diagnostics = {
 				globals = { 'vim' }
-			}
+			},
+			workspace = { checkThirdParty = false },
+			telemetry = { enable = false },
 		}
 	}
 })
 
-local cmp = require('cmp')
+local cmp = require 'cmp'
+local luasnip = require 'luasnip'
+
 local cmp_select = { behavior = cmp.SelectBehavior.Select }
 lsp.setup_nvim_cmp({
 	mapping = lsp.defaults.cmp_mappings({
+		['<C-d>'] = cmp.mapping.scroll_docs(-4),
+		['<C-f>'] = cmp.mapping.scroll_docs(4),
 		['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
 		['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
 		['<C-y>'] = cmp.mapping.confirm({ select = true }),
 		["<C-Space>"] = cmp.mapping.complete(),
+		['<CR>'] = cmp.mapping.confirm {
+			behavior = cmp.ConfirmBehavior.Replace,
+			select = true,
+		},
+		['<Tab>'] = cmp.mapping(function(fallback)
+			if cmp.visible() then
+				cmp.select_next_item()
+			elseif luasnip.expand_or_jumpable() then
+				luasnip.expand_or_jump()
+			else
+				fallback()
+			end
+		end, { 'i', 's' }),
+		['<S-Tab>'] = cmp.mapping(function(fallback)
+			if cmp.visible() then
+				cmp.select_prev_item()
+			elseif luasnip.jumpable(-1) then
+				luasnip.jump(-1)
+			else
+				fallback()
+			end
+		end, { 'i', 's' }),
 	})
 })
 
@@ -59,12 +91,13 @@ lsp.on_attach(function(client, bufnr)
 	vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
 	vim.keymap.set("n", "gl", vim.diagnostic.open_float, opts)
 	vim.keymap.set("n", "<leader>ls", vim.lsp.buf.signature_help, opts)
-    vim.keymap.set("n", "<leader>la", vim.lsp.buf.code_action, opts)
-    vim.keymap.set("n", "<leader>lR", vim.lsp.buf.rename, opts)
-    vim.keymap.set("n", "<leader>lf", vim.lsp.buf.format, opts)
-    -- vim.keymap.set('n', '<leader>ld', tb.diagnostics, vim.tbl_deep_extend('force',{severity=vim.diagnostic.severity.ERROR}, opts))
+	vim.keymap.set("n", "<leader>la", vim.lsp.buf.code_action, opts)
+	vim.keymap.set("n", "<leader>lR", vim.lsp.buf.rename, opts)
+	vim.keymap.set("n", "<leader>lf", vim.lsp.buf.format, opts)
+	-- vim.keymap.set('n', '<leader>ld', tb.diagnostics, vim.tbl_deep_extend('force',{severity=vim.diagnostic.severity.ERROR}, opts))
 
 end)
+
 lsp.setup()
 
 vim.diagnostic.config({
