@@ -1,3 +1,3 @@
 require("metalhead.set")
-require("metalhead.remap")
+require("metalhead.keymap")
 require("metalhead.packer")
