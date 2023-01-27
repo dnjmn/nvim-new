@@ -10,6 +10,18 @@ end
 return require('packer').startup(function(use)
 	use 'wbthomason/packer.nvim'
 	use 'nvim-lua/plenary.nvim'
+	-- colorschemes
+	use 'navarasu/onedark.nvim' -- Theme inspired by Atom
+	use 'folke/tokyonight.nvim'
+	use 'fatih/molokai'
+	use 'luisiacc/gruvbox-baby'
+	use {
+		'rose-pine/neovim',
+		as = 'rose-pine',
+		config = function()
+			vim.cmd('colorscheme rose-pine')
+		end
+	}
 
 	use {
 		'VonHeikemen/lsp-zero.nvim',
@@ -46,16 +58,28 @@ return require('packer').startup(function(use)
 
 	-- Fuzzy Finder Algorithm which requires local dependencies to be built. Only load if `make` is available
 	use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make', cond = vim.fn.executable 'make' == 1 }
-	use { 'mbbill/undotree' }
+	use 'mbbill/undotree'
 
 
 	-- FUNCTIONS
+	-- buffer line
+	use {'akinsho/bufferline.nvim', tag = "v3.*", requires = 'nvim-tree/nvim-web-devicons'}
+	use 'moll/vim-bbye'
+
+	-- file explorer
+	use {
+		'nvim-tree/nvim-tree.lua',
+		requires = {
+			'nvim-tree/nvim-web-devicons', opt = true -- optional, for file icons
+		},
+		tag = 'nightly' -- optional, updated every week. (see issue #1193)
+	}
 	-- terminal
 	use { "akinsho/toggleterm.nvim", tag = '*', config = function()
 		require("toggleterm").setup()
 	end }
 	-- git
-	use { 'lewis6991/gitsigns.nvim' }
+	use 'lewis6991/gitsigns.nvim'
 	use 'tpope/vim-fugitive'
 	use 'tpope/vim-rhubarb'
 
@@ -64,26 +88,10 @@ return require('packer').startup(function(use)
 	use 'numToStr/Comment.nvim' -- "gc" to comment visual regions/lines
 
 	-- VISUALS
-	-- colorschemes
-	use 'navarasu/onedark.nvim' -- Theme inspired by Atom
-	use {
-		'rose-pine/neovim',
-		as = 'rose-pine',
-		config = function()
-			vim.cmd('colorscheme rose-pine')
-		end
-	}
-	-- lualine
-	use {
-		'nvim-lualine/lualine.nvim',
-		requires = { 'kyazdani42/nvim-web-devicons', opt = true }
-	}
-	-- scrolling
-	use { 'karb94/neoscroll.nvim' }
-	-- Add indentation guides even on blank lines
-	use 'lukas-reineke/indent-blankline.nvim'
-	-- zenmode
-	use { "folke/zen-mode.nvim" }
+	use 'nvim-lualine/lualine.nvim' -- status line
+	use 'karb94/neoscroll.nvim' -- smooth scrolling
+	use 'lukas-reineke/indent-blankline.nvim' -- Add indentation guides even on blank lines
+	use "folke/zen-mode.nvim" -- zenmode
 
 	if is_bootstrap then
 		require('packer').sync()
